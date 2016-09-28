@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	                       http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+          				   http://www.springframework.org/schema/tx 
+     					   http://www.springframework.org/schema/tx/spring-tx-3.2.xsd
+                     	   http://www.springframework.org/schema/aop 
+                           http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+                           http://www.springframework.org/schema/context 
+                           http://www.springframework.org/schema/context/spring-context-3.2.xsd"
+	default-lazy-init="true">
+	<aop:config proxy-target-class="true" />
+	<context:annotation-config />
+
+	<context:component-scan base-package="com.dgs" />
+<context:property-placeholder location="classpath:application.properties" />
+	<bean id="dataSource" class="${jdbc.app.datasource.class}"
+		destroy-method="close">
+		<property name="driverClass" value="${jdbc.app.datasource.driverClass}" />
+		<property name="jdbcUrl" value="${jdbc.app.datasource.jdbcUrl}" />
+		<property name="user" value="${jdbc.app.datasource.user}" />
+		<property name="password" value="${jdbc.app.datasource.password}" />
+
+		<!-- C3P0 properties -->
+		<property name="acquireIncrement" value="${c3p0.acquireIncrement}" />
+		<property name="minPoolSize" value="${c3p0.minPoolSize}" />
+		<property name="maxPoolSize" value="${c3p0.maxPoolSize}" />
+		<property name="maxIdleTime" value="${c3p0.maxIdleTime}" />
+	</bean>
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="annotatedClasses">
+			<list>
+				<value>com.dgs.data.domain.MmeAlbum</value>
+				<value>com.dgs.data.domain.MmeAlbumArtistSongMapping</value>
+				<value>com.dgs.data.domain.MmeAlbumArtistSongMappingId</value>
+				<value>com.dgs.data.domain.MmeArtist</value>
+				<value>com.dgs.data.domain.MmeGenre</value>
+				<value>com.dgs.data.domain.MmePlaylist</value>
+				<value>com.dgs.data.domain.MmePlaylistSongMapping</value>
+				<value>com.dgs.data.domain.MmePlaylistSongMappingId</value>
+				<value>com.dgs.data.domain.MmeSongs</value>
+				<value>com.dgs.data.domain.MmeUser</value>
+			</list>
+		</property>
+		<property name="configLocations">
+			<array>
+				<value>classpath:hibernate.cfg.xml</value>
+			</array>
+		</property>
+
+	</bean>
+
+	<bean id="txManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<bean id="persistenceExceptionTranslationPostProcessor"
+		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+
+
+</beans>  
